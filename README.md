@@ -3,6 +3,15 @@
 O SecureDocs ajuda pequenas empresas a criar, revisar e organizar documentos
 práticos de segurança cibernética e privacidade em português claro.
 
+## Site
+
+O build estático está na branch `gh-pages`.
+
+**Acessar:** https://gabictor11-cmyk.github.io/securedocs/
+
+Se o link ainda não abrir, em **Settings → Pages** do repositório selecione
+**Deploy from a branch**, escolha `gh-pages` e a pasta `/(root)`, e salve.
+
 ## O que já existe
 
 - Dashboard de preparação da empresa.
