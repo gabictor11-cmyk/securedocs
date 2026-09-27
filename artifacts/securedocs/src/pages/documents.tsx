@@ -1,0 +1,20 @@
+import { FilePlus2, FolderOpen, Search, SlidersHorizontal } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Link } from 'wouter';
+import { DocumentCard } from '@/components/document-card';
+import { useSecureDocs } from '@/hooks/use-securedocs';
+
+export default function Documents() {
+  const { documents, deleteDocument } = useSecureDocs();
+  const [query, setQuery] = useState('');
+  const [filter, setFilter] = useState('Todos');
+  const filtered = useMemo(() => documents.filter((item) => `${item.title} ${item.category} ${item.status}`.toLowerCase().includes(query.toLowerCase()) && (filter === 'Todos' || item.status === filter)), [documents, query, filter]);
+  return (
+    <div className="page-enter mx-auto max-w-[1280px]">
+      <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end"><div><p className="mb-3 text-xs font-bold uppercase tracking-[.16em] text-primary">Biblioteca</p><h1 className="text-3xl font-semibold tracking-[-.04em] sm:text-4xl">Seus documentos</h1><p className="mt-3 text-sm text-muted-foreground">Um lugar para organizar, revisar e manter a segurança em movimento.</p></div><Link href="/novo-documento" data-testid="button-create-document-library" className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground shadow-[0_10px_24px_hsl(var(--primary)/.17)]"><FilePlus2 size={17} /> Novo documento</Link></div>
+      <div className="mt-8 flex flex-col gap-3 sm:flex-row"><label className="relative flex-1"><Search size={17} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" /><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar por nome ou categoria..." data-testid="input-search-documents" className="h-11 w-full rounded-xl border border-input bg-card pl-10 pr-4 text-sm outline-none transition-shadow placeholder:text-muted-foreground/70 focus:border-primary focus:ring-4 focus:ring-primary/10" /></label><div className="flex items-center gap-2 overflow-x-auto"><SlidersHorizontal size={16} className="ml-1 shrink-0 text-muted-foreground" />{['Todos', 'Pronto', 'Em revisão', 'Rascunho'].map((item) => <button type="button" key={item} onClick={() => setFilter(item)} data-testid={`filter-${item.replace(' ', '-').toLowerCase()}`} className={`whitespace-nowrap rounded-xl px-3.5 py-2.5 text-xs font-semibold transition-colors ${filter === item ? 'bg-foreground text-background' : 'bg-muted text-muted-foreground hover:text-foreground'}`}>{item}</button>)}</div></div>
+      <div className="mt-8 flex items-center justify-between border-b border-border pb-4"><p className="text-xs text-muted-foreground">{filtered.length} {filtered.length === 1 ? 'documento encontrado' : 'documentos encontrados'}</p><span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground/70">Ordenado por atualização</span></div>
+      {filtered.length > 0 ? <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">{filtered.map((document) => <DocumentCard key={document.id} document={document} onDelete={(id) => { if (window.confirm('Excluir este documento?')) deleteDocument(id); }} />)}</div> : <div className="mt-6 rounded-2xl border border-dashed border-border bg-card px-6 py-16 text-center"><span className="mx-auto grid size-12 place-items-center rounded-2xl bg-muted text-muted-foreground"><FolderOpen size={22} /></span><h2 className="mt-5 text-lg font-semibold">Nenhum documento encontrado</h2><p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-muted-foreground">{query ? 'Tente buscar por outro termo ou remova os filtros.' : 'Comece com um documento guiado e transforme as respostas da sua empresa em um plano claro.'}</p>{!query && <Link href="/novo-documento" data-testid="empty-create-document" className="mt-6 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground"><FilePlus2 size={16} /> Criar primeiro documento</Link>}</div>}
+    </div>
+  );
+}
