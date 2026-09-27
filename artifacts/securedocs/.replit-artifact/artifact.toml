@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "SecureDocs — Documentos de Segurança"
+description = "Aplicativo web para pequenas empresas criarem, organizarem e exportarem documentos práticos de segurança cibernética e privacidade, com orientação simples em português."
+version = "1.0.0"
+id = "artifacts/securedocs"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 20924
+
+[services.development]
+run = "pnpm --filter @workspace/securedocs run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/securedocs", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/securedocs/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "20924"
+BASE_PATH = "/"
